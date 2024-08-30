@@ -4,4 +4,5 @@ body {
 
 body #layout-main {
   height: 100%;
+  flex: 5;
 }

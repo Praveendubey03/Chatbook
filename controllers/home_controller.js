@@ -5,6 +5,12 @@ module.exports.home = async function (req, res) {
     try {
         // Find all posts asynchronously
         const posts = await (Post.find({})).populate('user')
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user'
+            }
+        })
         .exec();
         // Render the 'home' view with the posts
         return res.render('home', {
