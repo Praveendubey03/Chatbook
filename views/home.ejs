@@ -3,12 +3,13 @@
 
 <section id="feed-posts">
     <h4>Posts</h4>
+    <% if(locals.user){%>
     <form action="/posts/create" id="new-post-form" method="post">
         <textarea name="content" cols="30" rows="3" placeholder="share your thoughts about post..."></textarea>
         <input type="submit" value="post">
     </form>
-
-    <div is="posts-list-container">
+    <%} %>
+    <div id="posts-list-container">
         <ul>
             <%for(post of posts){%>
                 <li>
