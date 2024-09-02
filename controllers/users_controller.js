@@ -1,10 +1,27 @@
 const User = require('../models/user')
 
-module.exports.profile = function(req, res) {
-    console.log('Rendering profile page'); // Debug log
-    return res.render('user_profile', {
-        title: 'User Profile'
-    });
+module.exports.profile = async function(req, res) {
+    try {
+        console.log('Rendering profile page'); // Debug log
+
+        // Find the user by ID asynchronously
+        const user = await User.findById(req.params.id).exec();
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Render the 'user_profile' view with the user data
+        return res.render('user_profile', {
+            title: 'User Profile',
+            profile_user: user
+        });
+    } catch (err) {
+        // Handle any errors that occur during the find operation
+        console.error('Error fetching user profile:', err);
+        return res.status(500).send('Internal Server Error');
+    }
 };
 
 // Render the signUp
