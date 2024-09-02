@@ -24,6 +24,34 @@ module.exports.profile = async function(req, res) {
     }
 };
 
+module.exports.update = async function(req, res) {
+    try {
+        // Check if the current user is authorized to update the profile
+        if (req.user.id !== req.params.id) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        // Find the user by ID and update with the new data
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+            new: true, // Return the modified document rather than the original
+            runValidators: true // Ensure the update meets schema validation
+        }).exec();
+
+        // If user not found, return a 404 status
+        if (!updatedUser) {
+            return res.status(404).send('User not found');
+        }
+
+        // Redirect back or to another page if necessary
+        return res.redirect('back');
+    } catch (err) {
+        // Handle any errors that occur during the update operation
+        console.error('Error updating user profile:', err);
+        return res.status(500).send('Internal Server Error');
+    }
+};
+
+
 // Render the signUp
 module.exports.signUp = function (req, res) {
     if(req.isAuthenticated()){
