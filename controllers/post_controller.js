@@ -21,3 +21,34 @@ module.exports.create = async function (req, res) {
         return res.status(500).send('Internal Server Error');
     }
 };
+
+module.exports.destroy = async function(req, res) {
+    try {
+        // Find the post by ID
+        const post = await Post.findById(req.params.id).exec();
+
+        if (!post) {
+            // If the post does not exist, redirect back
+            return res.redirect('back');
+        }
+
+        // Check if the current user is the owner of the post
+        if (post.user.toString() === req.user.id.toString()) {
+            // Delete the post
+            await Post.findByIdAndDelete(req.params.id).exec();
+
+            // Delete all comments associated with the post
+            await Comment.deleteMany({ post: req.params.id }).exec();
+
+            // Redirect back
+            return res.redirect('back');
+        } else {
+            // If the user is not the owner, redirect back
+            return res.redirect('back');
+        }
+    } catch (err) {
+        // Handle errors and respond appropriately
+        console.error(err);
+        return res.redirect('back');
+    }
+};
