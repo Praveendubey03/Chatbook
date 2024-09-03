@@ -37,7 +37,6 @@ module.exports.create = async function (req, res) {
 };
 
 
-
 module.exports.destroy = async function(req, res) {
     try {
         // Find the comment by ID

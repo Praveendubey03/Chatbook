@@ -7,7 +7,8 @@ const expressLayouts = require('express-ejs-layouts');
 const db = require('./config/mongoose');
 const MongoStore = require('connect-mongo'); // Correct import
 const sassMiddleware = require('node-sass-middleware');
-
+const flash = require('connect-flash');
+const customMware = require('./config/middleware');
 
 
 const app = express();
@@ -54,6 +55,8 @@ app.use(passport.session());
 
 // Set authenticated user
 app.use(passport.setAuthenticatedUser);
+app.use(flash());
+app.use(customMware.setFlash);
 
 // Routes
 app.use('/', require('./routes'));

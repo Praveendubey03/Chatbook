@@ -3,21 +3,22 @@ const User = require('../models/user');
 const LocalStrategy = require('passport-local').Strategy;
 
 passport.use(new LocalStrategy({
-    usernameField: 'email'
+    usernameField: 'email',
+    passReqToCallback: true
 },
-async function(email, password, done) {
+async function(req, email, password, done) {
     try {
         // find a user and establish the identity
         const user = await User.findOne({ email: email });
 
         if (!user || user.password !== password) {
-            console.log('Invalid username/password');
+           req.flash('error', 'Invaild Username/Password');
             return done(null, false);
         }
 
         return done(null, user);
     } catch (err) {
-        console.log('Error in finding the user --> Passport');
+        req.flash('error', err);
         return done(err);
     }
 }));

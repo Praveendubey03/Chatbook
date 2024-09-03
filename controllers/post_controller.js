@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const Comment = require('../models/comment')
 
 module.exports.create = async function (req, res) {
     try {
@@ -14,10 +15,11 @@ module.exports.create = async function (req, res) {
             user: req.user._id
         });
 
+        req.flash('success', 'Post published!');
         // Redirect back to the previous page
         return res.redirect('back');
     } catch (err) {
-        console.error('Error creating a post:', err);
+        req.flash('error', err);
         return res.status(500).send('Internal Server Error');
     }
 };
@@ -40,15 +42,18 @@ module.exports.destroy = async function(req, res) {
             // Delete all comments associated with the post
             await Comment.deleteMany({ post: req.params.id }).exec();
 
+            req.flash('success', 'Post and associated comments deleted!');
             // Redirect back
             return res.redirect('back');
         } else {
+
+            req.flash('error', 'You cannot delete this post');
             // If the user is not the owner, redirect back
             return res.redirect('back');
         }
     } catch (err) {
         // Handle errors and respond appropriately
-        console.error(err);
+        req.flash('error', err);
         return res.redirect('back');
     }
 };

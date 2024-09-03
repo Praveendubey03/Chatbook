@@ -104,6 +104,7 @@ module.exports.create = async function (req, res) {
 
 // sign in and create sessions
 module.exports.createSessions = function (req, res) {
+    req.flash('success', 'Logged in successfully')
    return res.redirect('/');
 }
 
@@ -113,6 +114,7 @@ module.exports.destroySession = function(req, res) {
             console.log('Error while logging out:', err);
             return res.redirect('/'); // Redirect on error or handle it appropriately
         }
+        req.flash('success', 'You have logged out!')
         return res.redirect('/'); // Redirect after successful logout
     });
 };
