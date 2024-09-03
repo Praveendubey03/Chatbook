@@ -15,6 +15,15 @@ module.exports.create = async function (req, res) {
             user: req.user._id
         });
 
+        if(req.xhr){
+            return res.status(200).json({
+                data: {
+                    post: post
+                },
+                message: "Post created! "
+            })
+        }
+
         req.flash('success', 'Post published!');
         // Redirect back to the previous page
         return res.redirect('back');
