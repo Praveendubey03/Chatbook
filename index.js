@@ -5,11 +5,11 @@ const passport = require('passport');
 const passportLocal = require('./config/passport-local-strategy');
 const expressLayouts = require('express-ejs-layouts');
 const db = require('./config/mongoose');
-const MongoStore = require('connect-mongo'); // Correct import
+const MongoStore = require('connect-mongo'); 
 const sassMiddleware = require('node-sass-middleware');
 const flash = require('connect-flash');
 const customMware = require('./config/middleware');
-
+const path = require('path'); 
 
 const app = express();
 const port = 8000;
@@ -25,6 +25,9 @@ app.use(sassMiddleware({
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static('./assets'));
+// Make the uploads path available to the browser
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use(expressLayouts);
 
 // View engine setup

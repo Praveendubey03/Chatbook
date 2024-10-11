@@ -1,4 +1,6 @@
-const User = require('../models/user')
+const User = require('../models/user');
+const fs = require('fs');
+const path = require('path');
 
 module.exports.profile = async function(req, res) {
     try {
@@ -42,14 +44,36 @@ module.exports.update = async function(req, res) {
             return res.status(404).send('User not found');
         }
 
-        // Redirect back or to another page if necessary
-        return res.redirect('back');
+        User.uploadedAvatar(req, res, async function(err) {
+            if (err) {
+                console.log('****Multer error: ', err);
+            }
+
+            // Update user properties
+            updatedUser.name = req.body.name;
+            updatedUser.email = req.body.email;
+
+            if (req.file) {
+                if(updatedUser.avatar){
+                    fs.unlinkSync(path.join(__dirname, '..', updatedUser.avatar));
+                }
+                // Save the path of the uploads into the avatar field in the user
+                updatedUser.avatar = User.avatarPath + '/' + req.file.filename;
+            }
+
+            // Save the updated user data
+            await updatedUser.save();
+
+            // Redirect back after updating
+            return res.redirect('back');
+        });
     } catch (err) {
         // Handle any errors that occur during the update operation
         console.error('Error updating user profile:', err);
         return res.status(500).send('Internal Server Error');
     }
 };
+
 
 
 // Render the signUp
