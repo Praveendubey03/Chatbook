@@ -1,72 +1,76 @@
 const Comment = require('../models/comment');
 const Post = require('../models/post');
+const commentsMailer = require('../mailers/comments_mailer');
 
-module.exports.create = async function (req, res) {
+module.exports.create = async function(req, res) {
     try {
-        // Find the post by ID
-        const post = await Post.findById(req.body.post);
+        let post = await Post.findById(req.body.post);
 
         if (post) {
-            // Create a new comment
-            const comment = await Comment.create({
-                content: req.body.content, // Ensure content is coming from the correct field
+            let comment = await Comment.create({
+                content: req.body.content,
                 post: req.body.post,
                 user: req.user._id
             });
 
-            // Initialize comments array if it's undefined
-            if (!post.comments) {
-                post.comments = [];
+            post.comments.push(comment);
+            await post.save(); // Await the save operation
+            
+            comment = await Comment.findById(comment._id).populate('user', 'name email');
+
+            commentsMailer.newComment(comment);
+            
+            if (req.xhr) {
+                return res.status(200).json({
+                    data: {
+                        comment: comment
+                    },
+                    message: "Comment published!"
+                });
             }
 
-            // Add the new comment to the post's comments array
-            post.comments.push(comment._id); // Store the comment ID instead of the comment object
-            await post.save();
-
-            // Redirect to the homepage or another page
-            return res.redirect('/');
-        } else {
-            // Handle case where post is not found
-            return res.status(404).send('Post not found');
+            req.flash('success', 'Comment published!');
+            res.redirect('/');
         }
     } catch (err) {
-        // Handle errors
-        console.error(err);
-        return res.status(500).send('Server error');
+        req.flash('error', err.message || 'Error while creating comment');
+        return res.redirect('back');
     }
-};
-
+}
 
 module.exports.destroy = async function(req, res) {
     try {
-        // Find the comment by ID
-        const comment = await Comment.findById(req.params.id).exec();
-        
+        let comment = await Comment.findById(req.params.id);
+
         if (!comment) {
-            // If the comment does not exist, redirect back
+            req.flash('error', 'Comment not found');
             return res.redirect('back');
         }
 
-        // Check if the current user is the owner of the comment
-        if (comment.user.toString() === req.user.id.toString()) {
-            // Extract the post ID from the comment
-            const postId = comment.post;
+        if (comment.user.equals(req.user._id)) {
+            let postId = comment.post;
 
-            // Remove the comment ID from the post's comments array
-            await Post.findByIdAndUpdate(postId, { $pull: { comments: req.params.id } }).exec();
+            await comment.remove(); // Await the removal
 
-            // Delete the comment
-            await Comment.findByIdAndDelete(req.params.id).exec();
+            await Post.findByIdAndUpdate(postId, { $pull: { comments: req.params.id } });
 
-            // Redirect back
+            if (req.xhr) {
+                return res.status(200).json({
+                    data: {
+                        comment_id: req.params.id
+                    },
+                    message: "Comment deleted"
+                });
+            }
+
+            req.flash('success', 'Comment deleted!');
             return res.redirect('back');
         } else {
-            // If the user is not the owner, redirect back
+            req.flash('error', 'Unauthorized');
             return res.redirect('back');
         }
     } catch (err) {
-        // Handle errors and respond appropriately
-        console.error(err);
+        req.flash('error', err.message || 'Error while deleting comment');
         return res.redirect('back');
     }
 };
