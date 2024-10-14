@@ -2,22 +2,27 @@
 const Post = require('../models/post');
 const User = require('../models/user');
 
-module.exports.home = async function(req, res) {
+module.exports.home = async function (req, res) {
     try {
         // Fetch posts with populated data
-        const posts = await Post.find({})
+        let posts = await Post.find({})
+            .sort('-createdAt')
             .populate('user')
             .populate({
                 path: 'comments',
-                populate: {
-                    path: 'user'
-                }
+                populate: [
+                    { path: 'user' },
+                    { path: 'likes' } // Ensure this matches your schema
+                ]
             })
-            .exec();
-        
+            .populate('likes'); // Ensure this matches your schema
+
         // Fetch all users
-        const users = await User.find({}).exec();
-        
+        let users = await User.find({}).exec();
+
+        // Log fetched posts for debugging
+        console.log('Fetched posts:', posts);
+
         // Render the 'home' view with the posts and users
         return res.render('home', {
             title: "Codeial | Home",

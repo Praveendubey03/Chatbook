@@ -1,68 +1,77 @@
 const Post = require('../models/post');
-const Comment = require('../models/comment')
+const Comment = require('../models/comment');
+const Like = require('../models/like');
 
 module.exports.create = async function (req, res) {
     try {
-        // Check if the request body contains content and if the user is authenticated
-        if (!req.body.content || !req.user || !req.user._id) {
-            console.log('Invalid request: missing content or user ID');
-            return res.status(400).send('Bad Request: Missing content or user ID');
-        }
-
-        // Create a new post
-        await Post.create({
+        let post = await Post.create({
             content: req.body.content,
             user: req.user._id
         });
 
-        if(req.xhr){
+        if (req.xhr) {
+            // if we want to populate just the name of the user (we'll not want to send the password in the API), this is how we do it!
+            post = await post.populate('user', 'name').execPopulate();
+
             return res.status(200).json({
                 data: {
                     post: post
                 },
-                message: "Post created! "
-            })
+                message: "Post created!"
+            });
         }
 
         req.flash('success', 'Post published!');
-        // Redirect back to the previous page
         return res.redirect('back');
+
     } catch (err) {
         req.flash('error', err);
-        return res.status(500).send('Internal Server Error');
+        // added this to view the error on console as well
+        console.log(err);
+        return res.redirect('back');
     }
-};
 
-module.exports.destroy = async function(req, res) {
+}
+
+
+module.exports.destroy = async function (req, res) {
+
     try {
-        // Find the post by ID
-        const post = await Post.findById(req.params.id).exec();
+        let post = await Post.findById(req.params.id);
 
-        if (!post) {
-            // If the post does not exist, redirect back
-            return res.redirect('back');
-        }
+        if (post.user == req.user.id) {
 
-        // Check if the current user is the owner of the post
-        if (post.user.toString() === req.user.id.toString()) {
-            // Delete the post
-            await Post.findByIdAndDelete(req.params.id).exec();
+            // CHANGE :: delete the associated likes for the post and all its comments' likes too
+            await Like.deleteMany({ likeable: post, onModel: 'Post' });
+            await Like.deleteMany({ _id: { $in: post.comments } });
 
-            // Delete all comments associated with the post
-            await Comment.deleteMany({ post: req.params.id }).exec();
+
+
+            post.remove();
+
+            await Comment.deleteMany({ post: req.params.id });
+
+
+            if (req.xhr) {
+                return res.status(200).json({
+                    data: {
+                        post_id: req.params.id
+                    },
+                    message: "Post deleted"
+                });
+            }
 
             req.flash('success', 'Post and associated comments deleted!');
-            // Redirect back
+
             return res.redirect('back');
         } else {
-
-            req.flash('error', 'You cannot delete this post');
-            // If the user is not the owner, redirect back
+            req.flash('error', 'You cannot delete this post!');
             return res.redirect('back');
         }
+
     } catch (err) {
-        // Handle errors and respond appropriately
         req.flash('error', err);
         return res.redirect('back');
     }
-};
+
+}
