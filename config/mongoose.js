@@ -12,4 +12,4 @@ db.once('open', function(){
 });
 
 
-module.exports = db
+module.exports = db;
