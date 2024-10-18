@@ -1,5 +1,5 @@
 const express = require('express');
-const env = require('./config/environment');
+
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
@@ -24,8 +24,8 @@ console.log('chat server is listening on port 5000');
 
 
 app.use(sassMiddleware({
-    src: path.join(__dirname, env.asset_path, 'scss'),
-    dest: path.join(__dirname, env.asset_path, 'css'),
+    src: './assets/scss',
+    dest:'./assets/css',
     debug: true,
     outputStyle: 'expanded',
     prefix: '/css'
@@ -33,7 +33,7 @@ app.use(sassMiddleware({
 // Middleware setup
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(env.asset_path));
+app.use(express.static('./assets'));
 // Make the uploads path available to the browser
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -48,7 +48,7 @@ app.set('layout extractScripts', true);
 // Session middleware with MongoStore
 app.use(session({
     name: 'codeial',
-    secret: env.session_cookie_key, // Use a strong secret in production
+    secret: 'blahsomething', // Use a strong secret in production
     saveUninitialized: false,
     resave: false,
     cookie: {
