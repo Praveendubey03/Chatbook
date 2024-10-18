@@ -1,5 +1,6 @@
+require('dotenv').config();
 const express = require('express');
-const env = require('./config/environment')
+const env = require('./config/environment');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
