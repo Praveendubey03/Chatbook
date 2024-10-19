@@ -5,3 +5,13 @@
 [0mGET /users/sign-in [36m304[0m 5.448 ms - -[0m
 [0mPOST /users/create-session/ [36m302[0m 8.499 ms - 30[0m
 [0mGET / [32m200[0m 28.047 ms - 10253[0m
+[0mGET / [32m200[0m 118.374 ms - 9919[0m
+[0mGET / [32m200[0m 100.314 ms - 6963[0m
+[0mGET /users/sign-in [36m304[0m 19.922 ms - -[0m
+[0mPOST /users/create-session/ [36m302[0m 20.797 ms - 30[0m
+[0mGET / [32m200[0m 65.888 ms - 10253[0m
+[0mPOST /likes/toggle/?id=670bb39aaf3ce238f514613f&type=Comment [32m200[0m 40.053 ms - 57[0m
+[0mPOST /likes/toggle/?id=670bb39aaf3ce238f514613f&type=Comment [32m200[0m 25.215 ms - 56[0m
+[0mGET / [32m200[0m 118.894 ms - 9919[0m
+[0mGET / [36m304[0m 113.574 ms - -[0m
+[0mGET / [36m304[0m 122.335 ms - -[0m
