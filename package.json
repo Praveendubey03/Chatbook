@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js"
+    
   },
   "keywords": [
     "social"
@@ -19,11 +20,15 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "del": "^8.0.0",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.0",
+    "gulp-imagemin": "^9.1.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-uglify-es": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "kue": "^0.11.1",
     "mongoose": "^8.5.4",
