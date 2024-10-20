@@ -1,7 +1,9 @@
 const dotenv = require('dotenv').config();
 const express = require('express');
+
 const env = require('./config/environment');
 const logger = require('morgan');
+const viewHelper = require('./config/view-helper');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
@@ -17,6 +19,7 @@ const customMware = require('./config/middleware');
 const path = require('path');
 
 const app = express();
+viewHelper(app);
 const port = 8000;
 // setup the chat server to be used with socket.io
 const chatServer = require('http').Server(app);
