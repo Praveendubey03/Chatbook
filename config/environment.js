@@ -1,44 +1,44 @@
-const fs = require('fs');
-const rfs = require('rotating-file-stream');
-const path = require('path');
-const morgan = require('morgan');
+// const fs = require('fs');
+// const rfs = require('rotating-file-stream');
+// const path = require('path');
+// const morgan = require('morgan');
 
-// Create a directory for logs if it doesn't exist
-const logDirectory = path.join(__dirname, '../production_logs');
-if (!fs.existsSync(logDirectory)) {
-    fs.mkdirSync(logDirectory);
-}
+// // Create a directory for logs if it doesn't exist
+// const logDirectory = path.join(__dirname, '../production_logs');
+// if (!fs.existsSync(logDirectory)) {
+//     fs.mkdirSync(logDirectory);
+// }
 
-// Create a rotating write stream
-const accessLogStream = rfs.createStream('access.log', {
-    interval: '1d', // rotate daily
-    path: logDirectory
-});
+// // Create a rotating write stream
+// const accessLogStream = rfs.createStream('access.log', {
+//     interval: '1d', // rotate daily
+//     path: logDirectory
+// });
 
-const development = {
-    name: 'development',
-    asset_path: 'assets',
-    session_cookie_key: 'CJ99vRY5DpvYOIN0uHDjMbnCqvHX8ZwH',
-    db: 'codeial_development',
-    smtp: {
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: 'codeial498@gmail.com',
-            pass: 'wgpy nqpr bxuk numv'
-        }
-    },
-    google_client_id: "276251860270-4bscv6dngkrsefock6dd6calusbc4683.apps.googleusercontent.com",
-    google_client_secret: "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",
-    google_callback_url: "http://localhost:8000/users/auth/google/callback",
-    jwt_secret: 'qk9Jo2uiSakQsKsQUXjxB0IB9b7mbzX6',
-    morgan:{
-        mode: 'dev',
-        options: {stream: accessLogStream}
-    }
-}
+// const development = {
+//     name: 'development',
+//     asset_path: 'assets',
+//     session_cookie_key: 'CJ99vRY5DpvYOIN0uHDjMbnCqvHX8ZwH',
+//     db: 'codeial_development',
+//     smtp: {
+//         service: 'gmail',
+//         host: 'smtp.gmail.com',
+//         port: 587,
+//         secure: false,
+//         auth: {
+//             user: 'codeial498@gmail.com',
+//             pass: 'wgpy nqpr bxuk numv'
+//         }
+//     },
+//     google_client_id: "276251860270-4bscv6dngkrsefock6dd6calusbc4683.apps.googleusercontent.com",
+//     google_client_secret: "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",
+//     google_callback_url: "http://localhost:8000/users/auth/google/callback",
+//     jwt_secret: 'qk9Jo2uiSakQsKsQUXjxB0IB9b7mbzX6',
+//     morgan:{
+//         mode: 'dev',
+//         options: {stream: accessLogStream}
+//     }
+// }
 
 const production = {
     name: process.env.CODEIAL_ENVIRONMENT,
